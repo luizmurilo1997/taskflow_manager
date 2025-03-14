@@ -13,9 +13,17 @@ TaskFlow Manager is a comprehensive task management API built with modern techno
 - Comprehensive documentation
 - Clean architecture design
 
-## 2. Technical Architecture
+---
 
-### 2.1 Tech Stack
+## 2. Entity Relationship Diagram (ERD)
+
+![image](https://github.com/user-attachments/assets/1632502f-9fcc-4b42-ba98-66c8441403c3)
+
+---
+
+## 3. Technical Architecture
+
+### 3.1 Tech Stack
 
 - **Backend Framework**: FastAPI 0.109.2
 - **Database**: PostgreSQL 15+
@@ -25,7 +33,7 @@ TaskFlow Manager is a comprehensive task management API built with modern techno
 - **Migration Tool**: Alembic
 - **Testing**: pytest
 
-### 2.2 Project Structure
+### 3.2 Project Structure
 
 ```
 taskflow_manager/
@@ -40,20 +48,22 @@ taskflow_manager/
 │   ├── schemas/        # Pydantic models for request/response
 │   └── services/       # Business logic layer
 ├── migrations/         # Database migrations
-├── tests/             # Test suite
-├── docker-compose.yml # Docker configuration
-└── requirements.txt   # Project dependencies
+├── tests/              # Test suite
+├── docker-compose.yml  # Docker configuration
+└── requirements.txt    # Project dependencies
 ```
 
-## 3. First Time Setup (Windows)
+## 4. First Time Setup
 
-### 3.1 Prerequisites
+### 4.1 Prerequisites
 
 - [Python 3.12 or higher](https://www.python.org/downloads/)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (for Windows/macOS) or [Docker Engine](https://docs.docker.com/engine/install/) (for Linux)
 - Git
 
-### 3.2 Installation Steps
+### 4.2 Installation Steps
+
+#### Windows (PowerShell)
 
 1. **Clone and Setup Environment**
 
@@ -64,7 +74,7 @@ taskflow_manager/
 
    # Create and activate virtual environment
    python -m venv .venv
-   .venv\Scripts\activate.ps1
+   .venv\Scripts\activate
 
    # Install dependencies
    pip install -r requirements.txt
@@ -73,34 +83,62 @@ taskflow_manager/
 2. **Start Database**
 
    ```powershell
-   # Remove any existing containers (if any)
    docker compose down -v
-
-   # Start fresh PostgreSQL container
    docker compose up -d
-
-   # Wait a few seconds for the database to be ready
    Start-Sleep -Seconds 5
    ```
 
 3. **Initialize Database**
 
    ```powershell
-   # Initialize Alembic with our template
    python scripts/init_alembic.py
-
-   # Create and apply initial migration
    python -m alembic revision --autogenerate -m "Initial migration"
    python -m alembic upgrade head
    ```
 
 4. **Start the Application**
    ```powershell
-   # Start FastAPI server with hot reload
    python -m uvicorn app.main:app --reload
    ```
 
-### 3.3 Verify Installation
+#### Linux/macOS (Terminal)
+
+1. **Clone and Setup Environment**
+
+   ```bash
+   git clone <repository-url>
+   cd taskflow-manager
+
+   # Create and activate virtual environment
+   python3 -m venv .venv
+   source .venv/bin/activate
+
+   # Install dependencies
+   pip install -r requirements.txt
+   ```
+
+2. **Start Database**
+
+   ```bash
+   docker compose down -v
+   docker compose up -d
+   sleep 5
+   ```
+
+3. **Initialize Database**
+
+   ```bash
+   python scripts/init_alembic.py
+   python -m alembic revision --autogenerate -m "Initial migration"
+   python -m alembic upgrade head
+   ```
+
+4. **Start the Application**
+   ```bash
+   python -m uvicorn app.main:app --reload
+   ```
+
+## 5. Verify Installation
 
 1. **Check API Status**
    Open your browser and access:
@@ -118,11 +156,11 @@ taskflow_manager/
    X-API-Key: dev_api_key_super_secret
    ```
 
-## 4. Development Guide
+## 6. Development Guide
 
-### 4.1 Running Tests
+### 6.1 Running Tests
 
-```powershell
+```bash
 # Run all tests
 python -m pytest
 
@@ -130,9 +168,9 @@ python -m pytest
 python -m pytest --cov=app.services tests/ --cov-report term-missing
 ```
 
-### 4.2 Database Management
+### 6.2 Database Management
 
-```powershell
+```bash
 # Create new migration
 python -m alembic revision --autogenerate -m "Description"
 
@@ -143,39 +181,34 @@ python -m alembic upgrade head
 python -m alembic downgrade -1
 ```
 
-## 5. Troubleshooting
+## 7. Troubleshooting
 
-### 5.1 Database Issues
+### 7.1 Database Issues
 
 If you encounter database problems:
 
 1. **Reset Database Container**
 
-   ```powershell
-   # Stop and remove container
+   ```bash
    docker compose down -v
-
-   # Start fresh container
    docker compose up -d
-   Start-Sleep -Seconds 5
+   sleep 5
    ```
 
 2. **Reset Migrations**
 
-   ```powershell
-   # Remove migrations folder
-   Remove-Item -Recurse -Force migrations
-
-   # Reinitialize migrations
+   ```bash
+   rm -rf migrations
    python scripts/init_alembic.py
    python -m alembic revision --autogenerate -m "Initial migration"
    python -m alembic upgrade head
    ```
 
-### 5.2 Common Solutions
+### 7.2 Common Solutions
 
-- Ensure Docker Desktop is running
+- Ensure Docker is running
 - Check if port 5432 is available
 - Verify database credentials in `.env`
 - Make sure virtual environment is activated
-- Use `python -m` prefix for commands in Windows
+- Use `python -m` prefix for commands on Windows
+
