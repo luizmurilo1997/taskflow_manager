@@ -9,7 +9,6 @@ from sqlalchemy.orm import sessionmaker
 from app.main import app
 from app.core.database import Base, get_db
 
-# Use environment variables with fallbacks
 DATABASE_URL = os.environ.get(
     "DATABASE_URL", "postgresql+asyncpg://postgres:postgres@localhost:5432/taskflow")
 BASE_URL = os.environ.get("BASE_URL", "http://localhost:8000")
@@ -38,8 +37,6 @@ async def db_session(db_engine: AsyncEngine) -> AsyncGenerator[AsyncSession, Non
         bind=db_engine, class_=AsyncSession, expire_on_commit=False
     )
 
-    # Não usar o bloco 'async with session.begin()' aqui
-    # pois isso fecha a transação automaticamente ao sair do bloco
     session = async_session_maker()
     try:
         yield session
@@ -60,10 +57,8 @@ async def test_client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, N
 
     app.dependency_overrides[get_db] = override_get_db
 
-    # Configuração do cliente de teste
     client_params = {}
 
-    # Se estiver usando testes in-process, use o app diretamente
     if USE_IN_PROCESS:
         client_params["app"] = app
         client_params["base_url"] = "http://testserver"
@@ -71,7 +66,7 @@ async def test_client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, N
         client_params["base_url"] = BASE_URL
 
     async with AsyncClient(**client_params) as client:
-        # Add default headers for all requests
+
         client.headers.update(
             {"X-API-Key": os.environ.get("API_KEY", "dev_api_key_super_secret")})
         yield client

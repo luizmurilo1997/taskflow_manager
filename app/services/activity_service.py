@@ -34,7 +34,7 @@ class ActivityService:
         return activity
 
     async def get_project_activities(self, project_id: int):
-        
+
         await self.project_service.get_project(project_id)
         return await self.repository.get_activities_by_project(project_id)
 
@@ -51,3 +51,7 @@ class ActivityService:
 
         await self.repository.delete(activity_id)
         return True
+
+    async def get_all_activities(self) -> List[ActivityResponse]:
+        """Get all activities."""
+        return await self.repository.get_all_activities()

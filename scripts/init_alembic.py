@@ -7,10 +7,9 @@ from pathlib import Path
 
 def init_alembic():
     """Initialize Alembic with custom template and configuration."""
-    # Obter o diretório raiz do projeto
+
     project_root = Path(__file__).parent.parent.absolute()
 
-    # Definir caminhos absolutos
     migrations_dir = project_root / 'migrations'
     template_path = project_root / 'scripts' / \
         'alembic_template' / 'env.py.template'
@@ -19,15 +18,13 @@ def init_alembic():
     print(f"Diretório de migrações: {migrations_dir}")
     print(f"Caminho do template: {template_path}")
 
-    # Remover diretório de migrações existente
     if migrations_dir.exists():
         print(f"Removendo diretório de migrações existente: {migrations_dir}")
         shutil.rmtree(migrations_dir)
 
-    # Mudar para o diretório raiz do projeto
     os.chdir(project_root)
 
-    # Inicializar Alembic com tratamento de erros
+
     print("Inicializando Alembic...")
     result = subprocess.run(['alembic', 'init', 'migrations'],
                             capture_output=True,
@@ -37,7 +34,6 @@ def init_alembic():
         print(f"❌ Erro ao inicializar Alembic: {result.stderr}")
         sys.exit(1)
 
-    # Copiar o template personalizado
     if template_path.exists():
         target_env_path = migrations_dir / 'env.py'
         print(f"Copiando template para: {target_env_path}")

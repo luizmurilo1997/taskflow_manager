@@ -20,7 +20,6 @@ async def test_database_connection():
             value = result.scalar()
             print(f"Database connection successful: {value}")
 
-            # Check if tables exist
             result = await conn.execute(
                 text(
                     "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'")

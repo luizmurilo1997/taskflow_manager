@@ -125,3 +125,24 @@ async def delete_activity(
         404 Not Found: Activity not found
     """
     await service.delete_activity(activity_id)
+
+
+@router.get("/", response_model=List[ActivityResponse])
+async def get_all_activities(
+    _: Client = Depends(get_current_client),
+    service: ActivityService = Depends(ActivityService)
+):
+    """
+    Get all activities.
+
+    Args:
+        _: Client authenticated via API Key (apenas para validação)
+        service: Activity service
+
+    Returns:
+        List of all activities
+
+    Raises:
+        403 Forbidden: Invalid API Key
+    """
+    return await service.get_all_activities()
