@@ -1,4 +1,5 @@
 import asyncio
+import os
 import pytest
 import pytest_asyncio
 from typing import AsyncGenerator, Generator, Any, cast
@@ -8,21 +9,21 @@ from sqlalchemy.orm import sessionmaker
 from app.main import app
 from app.core.database import Base, get_db
 
-DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/taskflow"
+# Use environment variables with fallbacks
+DATABASE_URL = os.environ.get(
+    "DATABASE_URL", "postgresql+asyncpg://postgres:postgres@localhost:5432/taskflow")
+BASE_URL = os.environ.get("BASE_URL", "http://localhost:8000")
+USE_IN_PROCESS = os.environ.get(
+    "USE_IN_PROCESS_TESTING", "false").lower() == "true"
 
-
-@pytest.fixture(scope="function")
-def event_loop() -> Generator[asyncio.AbstractEventLoop, None, None]:
-    """Cria um novo event loop para cada teste."""
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    yield loop
-    loop.close()
+print(f"Integration tests using DATABASE_URL: {DATABASE_URL}")
+print(f"Integration tests using BASE_URL: {BASE_URL}")
+print(f"Using in-process testing: {USE_IN_PROCESS}")
 
 
 @pytest_asyncio.fixture(scope="function")
 async def db_engine() -> AsyncGenerator[AsyncEngine, None]:
-    """Cria um engine de banco de dados para cada teste."""
+    """Create a database engine for each test."""
     engine = create_async_engine(DATABASE_URL, echo=False)
 
     yield engine
@@ -32,29 +33,47 @@ async def db_engine() -> AsyncGenerator[AsyncEngine, None]:
 
 @pytest_asyncio.fixture
 async def db_session(db_engine: AsyncEngine) -> AsyncGenerator[AsyncSession, None]:
-
+    """Create a database session for each test."""
     async_session_maker = sessionmaker(
         bind=db_engine, class_=AsyncSession, expire_on_commit=False
     )
 
-    async with async_session_maker() as session:
-        async with session.begin():
-
-            yield session
+    # Não usar o bloco 'async with session.begin()' aqui
+    # pois isso fecha a transação automaticamente ao sair do bloco
+    session = async_session_maker()
+    try:
+        yield session
+    finally:
+        await session.close()
 
 
 @pytest_asyncio.fixture
 async def test_client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
-    """Cria um cliente de teste com a sessão de banco de dados configurada."""
+    """Create a test client with the database session configured."""
 
     async def override_get_db():
-        yield db_session
+        try:
+            yield db_session
+        except Exception as e:
+            await db_session.rollback()
+            raise e
 
     app.dependency_overrides[get_db] = override_get_db
 
-    async with AsyncClient(
-        base_url="http://localhost:8000"
-    ) as client:
+    # Configuração do cliente de teste
+    client_params = {}
+
+    # Se estiver usando testes in-process, use o app diretamente
+    if USE_IN_PROCESS:
+        client_params["app"] = app
+        client_params["base_url"] = "http://testserver"
+    else:
+        client_params["base_url"] = BASE_URL
+
+    async with AsyncClient(**client_params) as client:
+        # Add default headers for all requests
+        client.headers.update(
+            {"X-API-Key": os.environ.get("API_KEY", "dev_api_key_super_secret")})
         yield client
 
     app.dependency_overrides.clear()
