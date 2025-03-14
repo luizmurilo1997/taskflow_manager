@@ -40,17 +40,48 @@ taskflow_manager/
 ├── app/
 │   ├── core/           # Core configurations and utilities
 │   │   ├── config.py   # Environment and app settings
-│   │   ├── security.py # Authentication logic
-│   │   └── deps.py     # Dependency injection
+│   │   ├── database.py # Database configuration
+│   │   ├── deps.py     # Dependency injection
+│   │   ├── logging_config.py # Logging configuration
+│   │   └── security.py # Authentication and security
 │   ├── models/         # SQLAlchemy database models
+│   │   ├── activity.py
+│   │   ├── client.py
+│   │   └── project.py
 │   ├── repositories/   # Data access layer
+│   │   ├── activity_repository.py
+│   │   ├── client_repository.py
+│   │   └── project_repository.py
 │   ├── routes/         # API endpoints
+│   │   ├── activity_routes.py
+│   │   ├── client_routes.py
+│   │   └── project_routes.py
 │   ├── schemas/        # Pydantic models for request/response
+│   │   ├── activity.py
+│   │   ├── client.py
+│   │   └── project.py
 │   └── services/       # Business logic layer
+│       ├── activity_service.py
+│       ├── client_service.py
+│       └── project_service.py
 ├── migrations/         # Database migrations
-├── tests/              # Test suite
-├── docker-compose.yml  # Docker configuration
-└── requirements.txt    # Project dependencies
+│   ├── versions/      # Migration versions
+│   └── env.py        # Alembic configuration
+├── scripts/           # Utility scripts
+│   ├── alembic_template/
+│   ├── init_alembic.py
+│   ├── reset_db.py
+│   └── seed_db.py
+├── tests/             # Test suite
+│   ├── core/         # Core functionality tests
+│   ├── models/       # Model tests
+│   └── services/     # Service layer tests
+├── .env.example      # Example environment variables
+├── .gitignore        # Git ignore rules
+├── alembic.ini       # Alembic configuration
+├── docker-compose.yml # Docker configuration
+├── pyproject.toml    # Project configuration
+└── requirements.txt  # Project dependencies
 ```
 
 ## 4. First Time Setup
