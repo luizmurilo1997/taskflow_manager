@@ -9,4 +9,9 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 asyncio_mode = "strict"
-asyncio_fixture_loop_scope = "function" 
+asyncio_default_fixture_loop_scope = "function"
+env = [
+    "DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/taskflow",
+    "TEST_DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/taskflow_test",
+    "API_KEY=dev_api_key_super_secret"
+] 

@@ -15,15 +15,13 @@ class ActivityService:
         self.project_service = ProjectService(db)
 
     async def create_activity(self, activity_data: ActivityCreate, current_user: Client):
-        # Verificar se o projeto existe
+
         project = await self.project_service.get_project(activity_data.project_id)
 
-        # Preparar dados da atividade
         activity_dict = activity_data.model_dump()
         activity_dict["start_time"] = activity_dict.get(
             "start_time") or datetime.now(timezone.utc)
 
-        # Criar a atividade usando o repository
         return await self.repository.create(activity_dict)
 
     async def get_activity(self, activity_id: int):
@@ -36,22 +34,20 @@ class ActivityService:
         return activity
 
     async def get_project_activities(self, project_id: int):
-        # Verificar se o projeto existe
+        
         await self.project_service.get_project(project_id)
         return await self.repository.get_activities_by_project(project_id)
 
     async def update_activity(self, activity_id: int, activity_data: ActivityUpdate):
-        # Verificar se a atividade existe
+
         activity = await self.get_activity(activity_id)
 
-        # Atualizar usando o repository
         update_data = activity_data.model_dump(exclude_unset=True)
         return await self.repository.update(activity_id, update_data)
 
     async def delete_activity(self, activity_id: int):
-        # Verificar se a atividade existe
+
         activity = await self.get_activity(activity_id)
 
-        # Deletar usando o repository
         await self.repository.delete(activity_id)
         return True

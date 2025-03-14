@@ -18,12 +18,10 @@ async def test_activity_service_create():
         project_id=1
     )
 
-    # Mock project service
     mock_project = Mock()
     mock_project.id = 1
     service.project_service.get_project = AsyncMock(return_value=mock_project)
 
-    # Mock current user for API Key validation
     current_user = Mock()
 
     await service.create_activity(activity_data, current_user)
@@ -90,12 +88,10 @@ async def test_activity_service_update():
     mock_activity.project_id = 1
     mock_repository.get_by_id.return_value = mock_activity
 
-    # Mock project service
     mock_project = Mock()
     mock_project.id = 1
     service.project_service.get_project = AsyncMock(return_value=mock_project)
 
-    # Mock update result
     mock_updated = Mock()
     mock_updated.id = 1
     mock_updated.description = "Updated Activity"

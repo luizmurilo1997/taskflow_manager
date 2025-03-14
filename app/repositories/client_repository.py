@@ -8,17 +8,13 @@ class ClientRepository:
         self.db = db
 
     async def get_by_email(self, email: str) -> Client | None:
-        """
-        Busca um cliente pelo email
-        """
+
         query = select(Client).filter(Client.email == email)
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
 
     async def get_by_api_key(self, api_key: str) -> Client | None:
-        """
-        Busca um cliente pela API Key
-        """
+
         query = select(Client).filter(Client.api_key == api_key)
         result = await self.db.execute(query)
         return result.scalar_one_or_none()

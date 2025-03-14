@@ -8,8 +8,6 @@ from sqlalchemy.orm import sessionmaker
 from app.main import app
 from app.core.database import Base, get_db
 
-# Usar o PostgreSQL real para testes de integração
-# Usando o mesmo nome de banco de dados que está configurado no CI/CD
 DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/taskflow"
 
 

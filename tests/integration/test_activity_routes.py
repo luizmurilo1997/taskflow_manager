@@ -1,4 +1,3 @@
-"""Integration tests for activity routes."""
 import pytest
 import uuid
 from datetime import datetime

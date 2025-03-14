@@ -14,12 +14,12 @@ class ClientService:
         self.db = db
 
     async def list_clients(self) -> List[ClientResponse]:
-        """Lista todos os clientes (empresas) cadastrados no sistema"""
+
         clients = await self.repository.get_all_clients()
         return [ClientResponse.model_validate(client) for client in clients]
 
     async def create_client(self, client_data: ClientCreate):
-        """Cria um novo cliente (empresa) no sistema"""
+
         existing_client = await self.repository.get_by_email(client_data.email)
         if existing_client:
             raise HTTPException(
@@ -31,7 +31,7 @@ class ClientService:
         return await self.repository.create(client_dict)
 
     async def get_client(self, client_id: int):
-        """Obtém informações de um cliente específico"""
+
         client = await self.repository.get_by_id(client_id)
         if not client:
             raise HTTPException(
@@ -41,11 +41,11 @@ class ClientService:
         return client
 
     async def get_client_by_email(self, email: str):
-        """Busca um cliente pelo email corporativo"""
+
         return await self.repository.get_by_email(email)
 
     async def update_client(self, client_id: int, client_data: ClientUpdate):
-        """Atualiza informações do cliente"""
+
         client = await self.repository.get_by_id(client_id)
         if not client:
             raise HTTPException(
@@ -65,5 +65,5 @@ class ClientService:
         return await self.repository.update(client_id, update_data)
 
     async def get_clients(self):
-        """Lista todos os clientes (empresas) do sistema"""
+
         return await self.repository.get_all_clients()

@@ -48,3 +48,7 @@ htmlcov/
 
 # Docker
 .docker/
+
+# Act local testing
+.actrc
+.secrets
