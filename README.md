@@ -9,9 +9,9 @@ TaskFlow Manager is a comprehensive task management API built with modern techno
 - Client management with API key authentication
 - Project lifecycle tracking
 - Activity management and monitoring
-- Secure API endpoints
-- Comprehensive documentation
-- Clean architecture design
+- Secure API endpoints with API key authentication
+- Comprehensive OpenAPI documentation
+- Clean architecture and layered design
 
 ---
 
@@ -74,6 +74,7 @@ taskflow_manager/
 │   └── seed_db.py
 ├── tests/             # Test suite
 │   ├── core/         # Core functionality tests
+│   ├── integration/  # Integration tests
 │   ├── models/       # Model tests
 │   └── services/     # Service layer tests
 ├── .env.example      # Example environment variables
@@ -94,45 +95,25 @@ taskflow_manager/
 
 ### 4.2 Installation Steps
 
-#### Windows (PowerShell)
+#### Option 1: Using Docker (Recommended)
 
-1. **Clone and Setup Environment**
+1. **Clone the Repository**
 
-   ```powershell
-   # Clone repository
+   ```bash
    git clone <repository-url>
    cd taskflow-manager
-
-   # Create and activate virtual environment
-   python -m venv .venv
-   .venv\Scripts\activate
-
-   # Install dependencies
-   pip install -r requirements.txt
    ```
 
-2. **Start Database**
+2. **Start the Application**
 
-   ```powershell
-   docker compose down -v
+   ```bash
    docker compose up -d
-   Start-Sleep -Seconds 5
    ```
 
-3. **Initialize Database**
+3. **Wait for Services**
+   The API will be available at http://localhost:8000 after the services are ready (usually takes about 30 seconds)
 
-   ```powershell
-   python scripts/init_alembic.py
-   python -m alembic revision --autogenerate -m "Initial migration"
-   python -m alembic upgrade head
-   ```
-
-4. **Start the Application**
-   ```powershell
-   python -m uvicorn app.main:app --reload
-   ```
-
-#### Linux/macOS (Terminal)
+#### Option 2: Local Development
 
 1. **Clone and Setup Environment**
 
@@ -193,10 +174,16 @@ taskflow_manager/
 
 ```bash
 # Run all tests
-python -m pytest
+python -m pytest tests/
 
-# Run with coverage report
-python -m pytest --cov=app.services tests/ --cov-report term-missing
+# Run unit tests
+python -m pytest tests/services tests/models tests/core
+
+# Run integration tests
+python -m pytest tests/integration
+
+# Run all tests with coverage report
+python -m pytest --cov=app tests/ --cov-report term-missing
 ```
 
 ### 6.2 Database Management
@@ -211,6 +198,42 @@ python -m alembic upgrade head
 # Rollback migration
 python -m alembic downgrade -1
 ```
+
+### 6.3 Docker Development
+
+```bash
+# Build and start services
+docker compose up -d --build
+
+# View logs
+docker compose logs -f
+
+# Stop services
+docker compose down
+
+# Stop services and remove volumes
+docker compose down -v
+
+# Reset database
+docker compose down -v
+docker compose up -d
+sleep 5
+python scripts/reset_db.py  # Reset database if needed
+python scripts/seed_db.py   # Populate with initial data if needed
+```
+
+### 6.4 CI/CD Pipeline
+
+The project includes a GitHub Actions workflow that:
+
+1. Runs unit and integration tests
+2. Generates and uploads coverage reports
+3. Builds and pushes Docker image on successful merge to main
+
+Required GitHub Secrets for CI/CD:
+
+- `DOCKER_HUB_USERNAME`: Your Docker Hub username
+- `DOCKER_HUB_ACCESS_TOKEN`: Your Docker Hub access token
 
 ## 7. Troubleshooting
 
@@ -242,4 +265,3 @@ If you encounter database problems:
 - Verify database credentials in `.env`
 - Make sure virtual environment is activated
 - Use `python -m` prefix for commands on Windows
-

@@ -30,32 +30,6 @@ async def create_client(
     return await service.create_client(client_data)
 
 
-@router.get("/me", response_model=ClientResponse)
-async def get_current_client_info(
-    _: bool = Depends(get_current_client),
-    service: ClientService = Depends(ClientService)
-):
-    """
-    Obtém informações sobre o primeiro cliente do sistema.
-
-    Args:
-        _: Validação da API Key
-
-    Returns:
-        Informações do primeiro cliente
-
-    Raises:
-        403 Forbidden: API Key inválida
-    """
-    clients = await service.get_clients()
-    if not clients:
-        raise HTTPException(
-            status_code=404,
-            detail="No clients found"
-        )
-    return clients[0]
-
-
 @router.get("/{client_id}", response_model=ClientResponse)
 async def get_client(
     client_id: int,
